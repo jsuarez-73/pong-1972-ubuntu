@@ -1,0 +1,31 @@
+{
+	"name": "@segfaultx/services/oauth",
+	"scripts": {
+		"build": "npx tsc && npx tsc-alias -p tsconfig.json",
+		"start": "npm run build && node ./dist/service-bootstrap.js",
+		"debug": "npm run build && node --env-file=../services-debug.env ./dist/service-bootstrap.js",
+		"inspect": "npm run build && node --inspect-brk=${PORT:=9229} ./dist/service-bootstrap.js",
+		"test": "npm run build && npx jasmine",
+		"test-serverup": "npm run build && JASMINE_DEV=true npx jasmine",
+		"debug-test": "npm run build && node --inspect-wait node_modules/.bin/jasmine",
+		"clean": "rm -rf node_modules dist"
+	},
+	"dependencies": {
+		"@fastify/cookie": "^11.0.2",
+		"@fastify/http-proxy": "^11.3.0",
+		"@fastify/static": "^8.2.0",
+		"@segfaultx/http": "../../lib/http",
+		"@segfaultx/jwt": "../../lib/jwt",
+		"@segfaultx/sql": "../../lib/sql",
+		"fastify": "^5.2.2",
+		"google-auth-library": "^10.3.0"
+	},
+	"devDependencies": {
+		"@angular/cli": "^20.1.6",
+		"@types/jasmine": "^5.1.7",
+		"@types/node": "^22.14.0",
+		"jasmine": "^5.6.0",
+		"tsc-alias": "^1.8.15",
+		"typescript": "^5.8.3"
+	}
+}

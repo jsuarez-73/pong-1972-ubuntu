@@ -1,0 +1,5 @@
+services:
+  gateway:
+    ports:
+      - "80:${GATEWAY_PORT_HTTP}"
+      - "443:${GATEWAY_PORT_HTTPS}"

@@ -1,0 +1,83 @@
+/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'DotGothic16';
+  src: url('/font/DotGothic16-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Baumans';
+  src: url('/font/Baumans-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.dotgothic16-regular {
+  font-family: "DotGothic16", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.baumans-regular {
+  font-family: "Baumans", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  font-family: 'DotGothic16', sans-serif;
+  min-height: 100vh;
+  height: 100%;
+}
+
+:root {
+  --pong-yellow: #f7da62;
+  --pong-orange: #fdb048;
+  --pong-tangarine: #eb8958;
+  --pong-white: #f2f2f0;
+  --pong-brown: #61544b;
+  --pong-gray: #303030;
+  --pong-black: #252525;
+  --slate-950: oklch(12.9% 0.042 264.695);
+  --slate-900: oklch(20.8% 0.042 265.755);
+  --slate-800: oklch(27.9% 0.041 260.031);
+  --slate-700: oklch(37.2% 0.044 257.287);
+  --slate-600: oklch(44.6% 0.043 257.281);
+  --slate-500: oklch(55.4% 0.046 257.417);
+  --slate-400: oklch(70.4% 0.04 256.788);
+}
+
+.pong-yellow {
+  color: var(--pong-yellow);
+}
+
+.pong-orange {
+  color: var(--pong-orange);
+}
+
+.pong-tangarine {
+  color: var(--pong-tangarine);
+}
+
+.pong-brown {
+  color: var(--pong-brown);
+}
+
+.pong-gray {
+  color: var(--pong-gray);
+}

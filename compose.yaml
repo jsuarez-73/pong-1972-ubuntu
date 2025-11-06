@@ -1,0 +1,26 @@
+name: ft_transcendence
+
+include:
+  - ./services/compose.yaml
+
+services:
+  web:
+    build:
+      context: ./
+      dockerfile: web/Dockerfile
+      args:
+        SHARED_FOLDER: ${SHARED_FOLDER}
+    container_name: web
+    env_file: ./services/services.env
+    environment:
+      COPYRIGHT: "segfaultx"
+    hostname: ${WEB_HOSTNAME}
+    expose:
+      - ${WEB_PORT}
+    restart: always
+    networks:
+      - pongBackNet
+    volumes:
+      - shared:/segfaultx/shared
+    depends_on:
+      - game

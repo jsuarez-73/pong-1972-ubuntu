@@ -1,0 +1,74 @@
+import { GameServer } from "@components/server/server.component";
+import { Game } from "@components/game-component/game.component";
+import { WebSocket } from "@fastify/websocket";
+import { SERVICES } from "@core/constants/constants";
+
+export class GameService extends GameServer {
+	private	static game_service: GameService | null = null;
+	private			gameLog: Map<number,Game> = new Map();
+	private			trainLog: Map<number, Game> = new Map();
+	protected		routes: Routes[] = [
+		{
+			method: "GET",
+			url: SERVICES.game,
+			handler: (req: any, rep: any) => this.ft_gameHandler(req, rep),
+			wsHandler: (socket: WebSocket, req: SocketRequest) => {
+			 this.ft_wsHandler(socket, req)
+			}
+		},
+		{
+			method: "GET",
+			url: SERVICES.train,
+			handler: (req: any, rep: any) => this.ft_trainHandler(req, rep),
+			wsHandler: (socket: WebSocket, req: SocketRequest) => {
+			 this.ft_wsTrainHandler(socket, req)
+			}
+		}
+	];
+
+	constructor () {
+		super();
+		if (GameService.game_service)
+			return (this);
+		GameService.game_service = this;
+		this.ft_startServer();
+	}
+
+	private	ft_gameHandler(req: any, rep: any) : void {
+		/*[PENDING]: What to in case the request is made by Http protocol*/
+		void req, rep;
+	}
+
+	private	ft_trainHandler(req: any, rep: any) : void {
+		void req, rep;
+		/*[PENDING]: What to in case the request is made by Http protocol*/
+	}
+
+	private ft_wsHandler(socket: WebSocket, req: SocketRequest) : void {
+		const	gameLog = this.gameLog.get(Number(req.params.id));
+		if (!gameLog) {
+			const	game = new Game(socket, req);
+			game.ft_setDisposal(() => {
+				this.gameLog.delete(Number(req.params.id));
+			});
+			this.gameLog.set(Number(req.params.id), game);
+			return ;
+		}
+		gameLog.ft_incommingSocket(socket);
+	}
+
+	private ft_wsTrainHandler(socket: WebSocket, req: SocketRequest) : void {
+		const	trainLog = this.trainLog.get(Number(req.params.id));
+		if (!trainLog) {
+			const	training_game = new Game(socket, req, {
+				isTrainingGame: true
+			});
+			training_game.ft_setDisposal(() => {
+				this.trainLog.delete(Number(req.params.id));
+			});
+			this.trainLog.set(Number(req.params.id), training_game);
+			return ;
+		}
+		trainLog.ft_incommingSocket(socket);
+	}
+}

@@ -1,0 +1,77 @@
+<div class="size-full flex justify-center items-center">
+	@if (modal_on()) {
+		<div class="bg-[#00000073] z-1 absolute size-full content-center 
+			justify-items-center" >
+			<div class="flex bg-transparent content-center">
+				<img class="max-h-2" src="assets/loading.svg" alt="laoding" />
+			</div>
+		</div>
+	}
+	<div class="w-[370px] text-white" [class.blur-xs]="modal_on()">
+	   <section>
+		 <h1 class="pong-tangarine text-2xl">
+		   Log into my account
+		 </h1>
+		 <p class="!my-7">
+		 The video game that changed the world.
+		 <br>
+		 Pong's legacy endures.
+		 </p>
+		 <div class="g_id_signin" data-type="standard" data-theme="filled_black" data-size="medium" data-text="signin_with"></div>
+		 <div class="flex flex-col">
+		@if (is_invalid_token() == true) {
+		<small class="pong-yellow">Invalid Token, something went wrong.</small>
+		}
+		 </div>
+	   </section>
+	   <hr class="pong-gray !my-7">
+	   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+		 <div class="form-group">
+		   <label for="email">
+			 EMAIL <span class="pong-tangarine">*</span>
+		   </label>
+		   <input id="email" type="email" formControlName="email" autocomplete="email">
+		   @if (loginForm.get('email')?.invalid
+			 && loginForm.get('email')?.touched) {
+			 <div class="flex flex-col">
+			   @if (loginForm.get('email')?.errors?.['required']) {
+			   <small class="pong-yellow">Email is required.</small>
+			   }
+			   @if (loginForm.get('email')?.errors?.['email']) {
+			   <small class="pong-yellow">Invalid email.</small>
+			   }
+			 </div>
+		   }
+		 </div>
+
+		 <div class="form-group">
+		   <label for="password">
+			 PASSWORD <span class="pong-tangarine">*</span>
+		   </label>
+		   <input id="password" type="password" formControlName="password">
+		   @if (loginForm.get('email')?.invalid
+			 && loginForm.get('email')?.touched) {
+			 <div class="flex flex-col">
+			   @if (loginForm.get('email')?.errors?.['required']) {
+			   <small class="pong-yellow">Password is required.</small>
+			   }
+			 </div>
+		   }
+		 </div>
+
+		 <div class="flex justify-center">
+		   <button type="submit" class="btn-auth">
+			 LOGIN
+		   </button>
+		 </div>
+	   </form>
+	   <hr class="pong-gray !my-7">
+	   <div class="justify-self-center">
+		 <p>Not account yet?
+		 <span class="pong-tangarine cursor-pointer" (click)="goRegister()">
+		   Create an account
+		 </span>
+		 </p>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,53 @@
+.start-gradient {
+  background: linear-gradient(
+    0deg,
+    var(--pong-tangarine),
+    var(--pong-orange),
+    var(--pong-yellow)
+  );
+  /*
+  background-size: 300% 300%;
+  animation: verticalGradient 5s linear infinite;
+  */
+}
+
+@keyframes verticalGradient {
+  0% {
+    background-position: 50% 100%;
+  }
+  50% {
+    background-position: 50% 0%;
+  }
+  100% {
+    background-position: 50% 100%;
+  }
+}
+
+.start-black {
+  background: var(--pong-black);
+}
+
+.btn-start {
+  font-size: 1.5rem;
+  margin-top: 7rem;
+  padding: 0.5rem 3rem;
+  border: 2px solid var(--pong-black);
+  border-radius: 1rem;
+  box-shadow: 0px 4px 6px var(--pong-brown);
+  cursor: pointer;
+}
+
+.btn-start:hover {
+  background: var(--pong-white);
+  border: 2px solid var(--pong-black);
+  color: var(--pong-black);
+}
+
+.shadow-r {
+  box-shadow: 2px 0px 6px var(--slate-800);
+}
+
+.shadow-l {
+  box-shadow: -2px 0px 6px var(--slate-800);
+}
+

@@ -1,0 +1,94 @@
+services:
+  game:
+    build:
+      context: ../
+      dockerfile: services/game/Dockerfile
+      args:
+        LIBRARYS: ${LIBRARYS}
+        LIB_FOLDER: ${LIB_FOLDER}
+        SHARED_FOLDER: ${SHARED_FOLDER}
+        TOOLS_PATH_DOCKERFILE: ${TOOLS_PATH_DOCKERFILE}
+    container_name: game
+    env_file: services.env
+    environment:
+      COPYRIGHT: "segfaultx"
+    hostname: ${GAME_HOSTNAME}
+    expose:
+      - ${GAME_PORT}
+    restart: always
+    networks:
+      - pongBackNet
+    volumes:
+      - lib:/segfaultx/lib
+      - shared:/segfaultx/shared
+    depends_on:
+      - oauth
+
+  gateway:
+    build:
+      context: ../
+      dockerfile: services/gateway/Dockerfile
+      args:
+        LIBRARYS: ${LIBRARYS}
+        LIB_FOLDER: ${LIB_FOLDER}
+        SHARED_FOLDER: ${SHARED_FOLDER}
+        TOOLS_PATH_DOCKERFILE: ${TOOLS_PATH_DOCKERFILE}
+    container_name: gateway
+    env_file: services.env
+    environment:
+      COPYRIGHT: "segfaultx"
+    hostname: ${GATEWAY_HOSTNAME}
+    expose:
+      - ${GATEWAY_PORT_HTTP} 
+      - ${GATEWAY_PORT_HTTPS}
+    restart: always
+    networks:
+      - pongBackNet
+    volumes:
+      - lib:/segfaultx/lib
+      - shared:/segfaultx/shared
+
+  oauth:
+    build:
+      context: ../
+      dockerfile: services/oauth/Dockerfile
+      args:
+        LIBRARYS: ${LIBRARYS}
+        LIB_FOLDER: ${LIB_FOLDER}
+        SHARED_FOLDER: ${SHARED_FOLDER}
+        TOOLS_PATH_DOCKERFILE: ${TOOLS_PATH_DOCKERFILE}
+    container_name: oauth
+    env_file: services.env
+    environment:
+      COPYRIGHT: "segfaultx"
+    hostname: ${OAUTH_HOSTNAME}
+    expose:
+      - ${OAUTH_PORT} 
+    restart: always
+    networks:
+      - pongBackNet
+    volumes:
+      - lib:/segfaultx/lib
+      - shared:/segfaultx/shared
+    depends_on:
+      - gateway
+
+networks:
+  pongBackNet:
+
+secrets:
+  backend_secret:
+    environment: "BACKEND"
+volumes:
+  lib:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: "../lib"
+  shared:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: "../shared"

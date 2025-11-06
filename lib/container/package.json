@@ -1,0 +1,19 @@
+{
+  "name": "@segfaultx/container",
+  "version": "1.0.0",
+  "main": "dist/container.js",
+  "types": "dist/container.d.ts",
+  "scripts": {
+	"postinstall": "npx tsc && npx tsc-alias -p tsconfig.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "segfaultx",
+  "license": "ISC",
+  "description": "Container structures",
+  "devDependencies": {
+	"@types/node": "^22.14.0",
+	"typescript": "^5.8.3",
+	"tsc-alias": "^1.8.15"
+  }
+}

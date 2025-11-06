@@ -1,0 +1,60 @@
+export enum	e_GAME_CONSTANTS {
+	WIDTH = 274,
+	HEIGHT = 153,
+	BALL = 4,
+	RACQUET = 20,
+	RACQUET_THICK = 5,
+	HALF_RTHICK = Math.round(RACQUET_THICK / 2),
+	HALF_WIDTH = Math.round(WIDTH / 2),
+	HALF_BALL = Math.round(BALL / 2),
+	HALF_RACQUET = Math.round(RACQUET / 2),
+	COUNTER_FINISH = 72,
+	COUNTER_START = 3
+}
+
+export enum e_BALL_ACTION {
+	MOVE = 0,
+	BOUNCE = -1,
+	SCORE_P1 = 1,
+	SCORE_P2 = 2
+
+}
+
+export enum	e_TAG_PLAYER {
+	ONE,
+	TWO
+}
+
+export enum	e_ACTION {
+	UP,
+	DOWN,
+	IDLE
+}
+
+export enum	e_GAME_STATE {
+	START,
+	COUNTDOWN,
+	READY,
+	FINISH,
+	UNKNOWN
+}
+
+export enum	e_PLAYER_STATE {
+	READY,
+	WAIT
+}
+
+export enum	e_TYPE_MESSAGE {
+	STATE_REQUEST,
+	STATUS_REQUEST,
+	STATE_RESPONSE,
+	NOTIFICATION,
+	ERROR_RESPONSE,
+	CLOSE_REQUEST,
+	UNDEFINED
+}
+
+export enum	e_ERROR_RESPONSE {
+	MALFORMED_MSG
+}
+

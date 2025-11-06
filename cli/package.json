@@ -1,0 +1,30 @@
+{
+	"name": "@segfaultx/cli",
+	"scripts": {
+		"postinstall": "${BOOTSTRAP_KEY_FOLDER:-../tools}/bootstrap_service_keys.sh",
+		"build": "npx tsc && npx tsc-alias -p tsconfig.json",
+		"start": "npm run build && node ./dist/src/cli-boostrap.js",
+		"inspect": "npm run build && node --inspect-brk=${PORT:=9229} ./dist/src/cli-boostrap.js",
+		"test": "npm run build && npx jasmine",
+		"test-serverup": "npm run build && JASMINE_DEV=true npx jasmine",
+		"debug-test": "npm run build && node --inspect-wait node_modules/.bin/jasmine",
+		"clean-dist": "rm -rf dist",
+		"clean": "rm -rf node_modules dist"
+	},
+	"dependencies": {
+		"@fastify/websocket": "^11.0.2",
+		"fastify": "^5.2.2",
+		"@segfaultx/container": "../lib/container",
+		"@segfaultx/observable": "../lib/observable",
+		"@segfaultx/http": "../lib/http",
+		"@segfaultx/jwt": "../lib/jwt"
+	},
+	"devDependencies": {
+		"@types/jasmine": "^5.1.7",
+		"@types/node": "^22.14.0",
+		"@types/ws": "^8.18.1",
+		"jasmine": "^5.6.0",
+		"tsc-alias": "^1.8.15",
+		"typescript": "^5.8.3"
+	}
+}

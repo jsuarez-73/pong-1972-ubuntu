@@ -1,0 +1,27 @@
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin: 1rem 0rem;
+  width: 100%;
+}
+
+.form-group input {
+  background: var(--pong-gray);
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+}
+
+.btn-auth {
+  background: var(--pong-white);
+  color: var(--pong-black);
+  margin-top: 1rem;
+  box-shadow: 0px 4px 6px var(--pong-brown);
+  padding: 0.5rem 3rem;
+  border-radius: 1rem;
+  cursor: pointer;
+}
+
+.btn-auth:hover {
+  background: var(--pong-tangarine);
+}

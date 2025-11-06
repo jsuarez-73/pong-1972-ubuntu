@@ -1,0 +1,22 @@
+{
+  "name": "@segfaultx/jwt",
+  "version": "1.0.0",
+  "description": "JSON Web Tokens SegFaultx Library",
+  "main": "dist/jwt.js",
+  "types": "dist/jwt.d.ts",
+  "scripts": {
+	"postinstall": "npx tsc && npx tsc-alias -p tsconfig.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "JSON",
+    "jwt"
+  ],
+  "author": "segfaultx",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.8.3"
+  }
+}

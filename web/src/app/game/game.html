@@ -1,0 +1,110 @@
+<div class="size-full flex flex-col items-center
+  bg-gradient-to-r from-slate-800 via-slate-400 to-slate-800">
+  <div class="atari-edge-w bg-slate-950 shadow-b">
+  </div>
+  <section class="flex justify-center size-full">
+    <div class="atari-edge-h bg-slate-950 shadow-r">
+    </div>
+    <section class="h-full flex flex-col items-center h-full
+      bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-500">
+      <div class="pong size-full flex flex-col items-center">
+        <h1 class="baumans-regular text-6xl !my-6"><strong>PONG</strong></h1>
+        <div class="trapezoid flex justify-center items-center bg-slate-950">
+          <svg
+            viewBox="0 0 759.828 442"
+            version="1.1"
+            id="trapezoidSVG"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:svg="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="tz-gradient-l" x1="1" y1="0" x2="0" y2="0.5">
+                <stop class="tz-slate-000" offset="40%" />
+                <stop class="tz-slate-800" offset="90%" />
+                <stop class="tz-slate-000" offset="100%" />
+              </linearGradient>
+              <linearGradient id="tz-gradient-r" x1="0" y1="0" x2="1" y2="0.5">
+                <stop class="tz-slate-000" offset="40%" />
+                <stop class="tz-slate-800" offset="90%" />
+                <stop class="tz-slate-000" offset="100%" />
+              </linearGradient>
+              <linearGradient id="tz-gradient-h" x1="0" y1="0" x2="0" y2="1">
+                <stop class="tz-slate-000" offset="0%" />
+                <stop class="tz-slate-800" offset="2%" />
+                <stop class="tz-slate-000" offset="20%" />
+                <stop class="tz-slate-000" offset="93%" />
+                <stop class="tz-slate-800" offset="98%" />
+                <stop class="tz-slate-000" offset="100%" />
+              </linearGradient>
+            </defs>
+            <g
+              id="tz-svg"
+              transform="translate(-580.08599,-319)">
+              <g
+                id="tz-group"
+                transform="matrix(0.71061094,0,0,0.71061094,419.01318,536.06056)">
+                <path
+                  id="tz-center"
+                  d="m 1283.4389,-281.52852 a 60.863743,60.863743 0 0 0 -48.375,-23.92774 H 287.53075 a 60.863744,60.863744 0 0 0 -48.375,23.92774 l 191.61914,177.59374 v 318.95703 l -113.13672,79.61133 a 79.949736,79.949736 0 0 0 54.98437,21.91015 h 777.34966 a 79.949739,79.949739 0 0 0 54.9843,-21.91015 l -113.1367,-79.61133 v -318.95703 z" />
+                <path
+                  id="tz-right"
+                  d="m 1283.4389,-281.52852 -191.6191,177.59374 v 318.95703 l 113.1367,79.61133 a 79.949739,79.949739 0 0 0 24.2266,-47.20312 l 66.1836,-483.77344 a 60.863743,60.863743 0 0 0 -11.9278,-45.18554 z" />
+                <path
+                  id="tz-left"
+                  d="M 317.63817,294.63358 430.77489,215.02225 V -103.93478 L 239.15575,-281.52852 a 60.863744,60.863744 0 0 0 -11.92578,45.18554 l 66.18164,483.77344 a 79.949736,79.949736 0 0 0 24.22656,47.20312 z" />
+              </g>
+              <path
+                id="tz-body"
+                d="m 471,219 h 978 a 62.820777,62.820777 48.894951 0 1 62.2411,71.33557 l -68.31,499.32886 A 82.52047,82.52047 138.89495 0 1 1361.1722,861 l -802.34442,0 A 82.520467,82.520467 41.10505 0 1 477.06883,789.66443 L 408.75895,290.33557 A 62.820778,62.820778 131.10505 0 1 471,219 Z"
+                transform="matrix(0.68847352,0,0,0.68847352,299.06541,168.2243)" />
+            </g>
+          </svg>
+          <canvas
+              #pongCourt
+              width="822"
+              height="459"
+              class="bg-slate-800 court rounded-4xl">
+          </canvas>
+        </div>
+        <div class="control-center rounded-2xl flex justify-between
+          bg-gradient-to-r from-slate-400 via-slate-300 to-slate-400">
+          <div class="column-bolt">
+            <div class="bolt shadow-bolt-r">
+            </div>
+            <div class="bolt shadow-bolt-r">
+            </div>
+          </div>
+          <div class="flex flex-col justify-between items-center">
+            <p class="text-xl"><strong>PLAYER 1</strong></p>
+            <div class="joystick shadow-r bg-radial-[at_50%_25%] from-slate-100 to-slate-400 to-75%">
+            </div>
+            <p>{{ nicknameLeft() }}</p>
+          </div>
+          <div class="column-bolt">
+            <div class="bolt shadow-bolt-b">
+            </div>
+            <div class="bolt shadow-bolt-b">
+            </div>
+          </div>
+          <div class="flex flex-col justify-between items-center">
+            <p class="text-xl"><strong>PLAYER 2</strong></p>
+            <div class="joystick shadow-l bg-radial-[at_50%_25%] from-slate-100 to-slate-400 to-75%">
+            </div>
+            <p>{{ nicknameRight() }}</p>
+          </div>
+          <div class="column-bolt">
+            <div class="bolt shadow-bolt-l">
+            </div>
+            <div class="bolt shadow-bolt-l">
+            </div>
+          </div>
+        </div>
+        <div class="pong-edge-w bg-slate-950 shadow-b">
+        </div>
+      </div>
+      <div class="wood size-full">
+      </div>
+    </section>
+    <div class="atari-edge-h bg-slate-950 shadow-l">
+    </div>
+  </section>
+</div>

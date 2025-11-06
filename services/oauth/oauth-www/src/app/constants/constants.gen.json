@@ -1,0 +1,1 @@
+{"CONSTANTS":{"OAUTH_PORT":"3001","OAUTH_HOST":"localhost","CLIENT_ID":"409116011161-ebf5blfces8od3vkiao4tuan8dk3qb4b.apps.googleusercontent.com","API_VERSION":"v1"},"DOMAINS":{"OAUTH_DOMAIN":"http://localhost:3001"},"SERVICES":{"signin":"http://localhost:3001/v1/signin","access":"http://localhost:3001/v1/access","callback":"http://localhost:3001/v1/callback"}}

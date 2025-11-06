@@ -1,0 +1,164 @@
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.atari-edge-w {
+  width: 1292px;
+  height: 35px;
+  position: relative;
+  z-index: 2;
+}
+
+.atari-edge-h {
+  width: 20px;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.pong {
+  max-height: 1024px;
+  width: 1200px;
+}
+
+.trapezoid {
+  width: 1069px;
+  height: 622px;
+  -webkit-mask-image: url('https://raw.githubusercontent.com/gist/silvagomez/c3f088684436e323ccd3b2ac057c710a/raw/a3402a966902b4be9d6c2df397225b3297c769ca/trapezoid.svg');
+  mask-image: url('https://raw.githubusercontent.com/gist/silvagomez/c3f088684436e323ccd3b2ac057c710a/raw/a3402a966902b4be9d6c2df397225b3297c769ca/trapezoid.svg');
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  position: relative
+  /*
+  position: relative;
+  -webkit-clip-path: url(#trapezoidSVG);
+  clip-path: url(#trapezoidSVG);
+  clip-path-box: border-box;
+  clip-path-position: center;
+  clip-path-source: url(#trapezoidSVG);
+  z-index: 3;
+  */
+}
+
+#trapezoidSVG {
+  width: 1069px;
+  height: 622px;
+  position: absolute;
+  box-shadow: 0px 6px 12px oklch(20.8% 0.042 265.755);
+}
+
+.tz-slate-700 {
+  stop-color: var(--slate-700);
+}
+
+.tz-slate-800 {
+  stop-color: var(--slate-800);
+}
+
+.tz-slate-900 {
+  stop-color: var(--slate-90);
+}
+
+.tz-slate-950 {
+  stop-color: var(--slate-950);
+}
+
+#trapezoidSVG #tz-center {
+  fill: url(#tz-gradient-h);
+}
+
+#trapezoidSVG #tz-right {
+  fill: url(#tz-gradient-r);
+}
+
+#trapezoidSVG #tz-left {
+  fill: url(#tz-gradient-l);
+}
+
+#trapezoidSVG #tz-body {
+  fill: none;
+  stroke: oklch(12.9% 0.042 264.695);
+  stroke-width: 21px;
+}
+
+.court {
+  margin-top: 5rem;
+  width: 822px;
+  height: 459px;
+  box-shadow: inset 0 0 30px 1px oklch(44.6% 0.043 257.281);
+  z-index: 9;
+}
+
+.control-center {
+  width: 1069px;
+  height: 140px;
+  margin: 2rem;
+  padding: 1rem;
+  box-shadow: 0px 2px 16px var(--slate-600);
+}
+
+.column-bolt {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.bolt {
+  height: 15px;
+  width: 15px;
+  border-radius: 50%;
+  background-color: var(--slate-600);
+  display: inline-block;
+}
+
+.shadow-bolt-r {
+  box-shadow: 2px 0px 6px var(--slate-800);
+}
+
+.shadow-bolt-l {
+  box-shadow: -2px 0px 6px var(--slate-800);
+}
+
+.shadow-bolt-b {
+  box-shadow: 0px 4px 6px var(--slate-800);
+}
+
+.joystick {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.pong-edge-w {
+  height: 15px;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+.wood {
+  /*
+  background-image: url('https://img.freepik.com/foto-gratis/mesa-madera-oscura-vertical_1208-345.jpg');
+  */
+  background-image: url('https://img.freepik.com/foto-gratis/mesa-madera-oscura-vertical_1208-345.jpg?t=st=1752007654~exp=1752011254~hmac=6e6d5ce982c6ab8bb6741a5348604ce1fa276bf3cbbc22673a737e764efded77&w=2000');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.shadow-r {
+  box-shadow: 4px 0px 12px var(--slate-900);
+}
+
+.shadow-l {
+  box-shadow: -4px 0px 12px var(--slate-900);
+}
+
+.shadow-b {
+  box-shadow: 0px 6px 12px var(--slate-900);
+}

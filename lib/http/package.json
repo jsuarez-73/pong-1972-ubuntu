@@ -1,0 +1,20 @@
+{
+	"name": "@segfaultx/http",
+	"author": "segfaultx",
+	"version": "1.0.0",
+	"main": "dist/http.js",
+	"types": "dist/http.d.ts",
+	"devDependencies": {
+		"@types/node": "^22.14.0",
+		"typescript": "^5.8.3"
+	},
+	"description": "Http Library for Http and Https request based on HTTP/1.1",
+	"scripts": {
+		"postinstall": "npx tsc && npx tsc-alias -p tsconfig.json",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [
+		"http"
+	],
+	"license": "MIT"
+}

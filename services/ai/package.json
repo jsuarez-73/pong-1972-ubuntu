@@ -1,0 +1,21 @@
+{
+  "name": "ai",
+  "version": "1.0.0",
+  "description": "Ai model to play pong1972 with TensorFlow",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tsc && npx tsc-alias -p tsconfig.json",
+    "start": "npm run build && node ./dist/main.js",
+	"inspect": "npm run build && node --inspect-brk ./dist/main.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@segfaultx/http": "file:../../lib/http",
+    "@segfaultx/observable": "file:../../lib/observable",
+    "@tensorflow/tfjs-node": "^4.22.0",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.9.3"
+  }
+}
