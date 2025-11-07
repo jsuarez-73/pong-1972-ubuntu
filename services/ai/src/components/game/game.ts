@@ -9,7 +9,7 @@ export class	PongGame {
 
 	private	_url: string = "";
 	private	last_message: void | Promise<void> = undefined;
-	private	listener: Observer<boolean> | undefined;
+	private	listener: Observer<{is_done: boolean, tag: e_TAG_PLAYER}> | undefined;
 
 	get	hsquares() {return (30)}
 	get	vsquares() {return (30)}
@@ -102,7 +102,11 @@ export class	PongGame {
 							if (msg.type == e_TYPE_MESSAGE.NOTIFICATION) {
 								const	noti = msg as StateNotificationMsg;
 								if (noti.body.status == e_GAME_STATE.FINISH)
-									await this.listener?.ft_update(true);
+									//await this.listener?.ft_update(true);
+									await this.listener?.ft_update({
+										is_done:true,
+										tag: msg.tag
+									});
 							}
 						});
 					}
@@ -115,7 +119,7 @@ export class	PongGame {
 		return (undefined);
 	}
 
-	public	ft_listenWhenDone(ob: Observer<boolean>): void {
+	public	ft_listenWhenDone(ob: Observer<{is_done: boolean, tag: e_TAG_PLAYER}>): void {
 		this.listener = ob;
 	}
 }

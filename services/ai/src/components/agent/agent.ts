@@ -21,6 +21,9 @@ export class	PongAgent {
 	private	replay_memory: ReplayMemory;
 	private	hit_delta: number;
 	private	epsilon_increment: number;
+	private	epsilon_decay_frames: number;
+	private	epsilon_final: number;
+	private	epsilon_init: number;
 	private	socket: WebSocket | undefined;
 	private	observer: Observer<MessageGame> = new Observer(async (msg: MessageGame) => {
 		switch (msg.type) {
@@ -42,16 +45,19 @@ export class	PongAgent {
 		this.game = game;
 		this.hit_delta = config.hit_delta;
 		const	diff = (config.epsilon_final - config.epsilon_init);
+		this.epsilon_final = config.epsilon_final;
+		this.epsilon_init = config.epsilon_init;
 		this.epsilon_increment =  diff / config.epsilon_decay_frames;
+		this.epsilon_decay_frames = config.epsilon_decay_frames;
 		this.online_network = Dqn.ft_createDeepQNetwork(
 			this.game.vsquares,
 			this.game.hsquares,
-			2
+			3
 		);
 		this.target_network = Dqn.ft_createDeepQNetwork(
 			this.game.vsquares,
 			this.game.hsquares,
-			2
+			3
 		);
 		this.target_network.trainable = false;
 		this.optimizer = Tf.train.adam(config.learning_rate);
@@ -105,6 +111,9 @@ export class	PongAgent {
 	}
 
 	private	ft_step(state: Tf.Tensor): e_ACTION {
+		this.epsilon = this.frame_count >= this.epsilon_decay_frames
+			? this.epsilon_final
+			: this.epsilon_init + this.epsilon_increment * this.frame_count;
 		this.frame_count++;
 		if (Math.random() < this.epsilon) {
 			return (this.ft_getRandomAction());
@@ -217,7 +226,7 @@ export class	PongAgent {
 	}
 
 	public	ft_isReplayMemoryFilled(): boolean {
-		return (this.replay_memory.appended == this.replay_memory.max_len);
+		return (this.replay_memory.appended >= this.replay_memory.max_len);
 	}
 
 	public	ft_connectGame(): void {

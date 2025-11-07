@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc && npx tsc-alias -p tsconfig.json",
     "start": "npm run build && node ./dist/main.js",
-	"inspect": "npm run build && node --inspect-brk ./dist/main.js"
+	"inspect": "npm run build && node --inspect-brk=${PORT:=9229} ./dist/main.js"
   },
   "author": "",
   "license": "ISC",
