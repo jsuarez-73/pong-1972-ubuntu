@@ -1,6 +1,6 @@
 import { Router } from "@services/router/router.service";
 import { Observer } from "@segfaultx/observable";
-import { e_Colors, e_GAME_CONSTANTS, e_GAME_STATE, e_PONG_COURT_VM, e_TYPE_MESSAGE } from "@cli-types/enums";
+import { e_Colors, e_GAME_CONSTANTS, e_GAME_STATE, e_PLAYER_STATE, e_PONG_COURT_VM, e_TYPE_MESSAGE } from "@cli-types/enums";
 import { ViewModel } from "@viewmodel/viewmodel";
 import { VLineDashed } from "@shared/element/vline-dashed.element";
 import { LabelElement } from "@shared/element/label.element";
@@ -16,7 +16,7 @@ import { ViewElement } from "@shared/element/element";
 export class	PongCourt extends ViewModel<ModelPongCourtService> {
 
 	/*[!PENDING][!IMPORTANT]: This url must be set up dinamically.*/
-	private	url: string = "http://192.168.1.15:3000/v1/train/1";//"wss://segfaultx.com/v1/game/207";
+	private	url: string = "http://localhost:3000/v1/train/1/watcher";//"wss://segfaultx.com/v1/game/207";
 	private	sc_size_game = {
 		x: this.sc_size.x - (e_PONG_COURT_VM.PADDING_LEFT + e_PONG_COURT_VM.PADDING_RIGHT),
 		y: this.sc_size.y - (e_PONG_COURT_VM.PADDING_UP + e_PONG_COURT_VM.PADDING_LOW)
@@ -61,6 +61,10 @@ export class	PongCourt extends ViewModel<ModelPongCourtService> {
 			game: PongCourtGame,
 			end: PongCourtEnd
 		});
+		this.ft_initGame();
+	}
+
+	private	ft_initGame(): void {
 		this.model.ft_subscribeToSocket(this.url, new Observer(async (msg: MessageGame) => {
 			this.ft_handleMessages(msg);
 			await this.ft_render();
@@ -197,11 +201,22 @@ export class	PongCourt extends ViewModel<ModelPongCourtService> {
 			if (msg.body.payload.countdown_finish === false)
 				this.ft_pushChildViewModel("start");
 			this.children.start.ft_update(msg);
+			const	msg_send = {
+				type: e_TYPE_MESSAGE.STATUS_REQUEST,
+				body: {
+					status: e_PLAYER_STATE.READY
+				}
+			};
+			this.model.ft_sendMessage(JSON.stringify(msg_send));
 		}
 		else if (status === e_GAME_STATE.FINISH) {
-			this.ft_popAllChildren();
-			this.ft_pushChildViewModel("end");
-			this.children.end.ft_update(msg);
+			if (! this.url.includes("watcher")) {
+				this.ft_popAllChildren();
+				this.ft_pushChildViewModel("end");
+				this.children.end.ft_update(msg);
+			}
+			else
+				this.ft_initGame();
 		}
 	}
 

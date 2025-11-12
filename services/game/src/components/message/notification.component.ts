@@ -24,6 +24,10 @@ export class Notification extends AbstractBuildMessage {
 			this.players.push(...players);
 	}
 
+	public	ft_setCounterFinish(counter_finish: number) {
+		this.counter_finish.counter = counter_finish;
+	}
+
 	private	ft_setStatus(status: e_GAME_STATE, quiet?: boolean) : Notification {
 		this.status = status;
 		if (quiet === undefined || ! quiet)

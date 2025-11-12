@@ -8,5 +8,5 @@ export const	SERVICES = {
 	/*The optional param (id) will be undefined when not specified.
 		* Routes allowed: v1/game/ and v1/game/1 */
 	game: `/${CONSTANTS.VERSION_API}/game/:id?`,
-	train: `/${CONSTANTS.VERSION_API}/train/:id?`
+	train: `/${CONSTANTS.VERSION_API}/train/:id/:user?`
 };

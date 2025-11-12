@@ -5,13 +5,14 @@ import { e_GAME_STATE, e_TAG_PLAYER, e_TYPE_MESSAGE } from "@game-types/enums";
 
 export	class Referee implements SubjectEmitter<MessageGame>, SubjectObserver<MessageGame>{
 
-	private	observer_players: Observer<MessageGame>;
-	private	global_state : GlobalState = new GlobalState();
-	private	msg_response: Subject<MessageGame> | null = null;
-	private	disposal_game: (() => void) = () => {};
-	private	observer_msgs: Observer<MessageGame>;
+	private		observer_players: Observer<MessageGame>;
+	protected	global_state : GlobalState;
+	private		msg_response: Subject<MessageGame> | null = null;
+	private		disposal_game: (() => void) = () => {};
+	private		observer_msgs: Observer<MessageGame>;
 
-	constructor () {
+	constructor (global_state: GlobalState) {
+		this.global_state = global_state;
 		this.observer_players = new Observer<MessageGame>((msg) => {
 			this.ft_incommingMessageGame(msg);
 			
@@ -42,7 +43,7 @@ export	class Referee implements SubjectEmitter<MessageGame>, SubjectObserver<Mes
 		}
 	}
 
-	private	ft_incommingCloseRequest(msg: CloseRequestMsg) {
+	protected	ft_incommingCloseRequest(msg: CloseRequestMsg) {
 		this.global_state.ft_PlayerGoingOut(msg.ft_getTag());
 	}
 

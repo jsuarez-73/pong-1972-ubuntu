@@ -124,8 +124,7 @@ export interface	AgentConfig {
 	epsilon_final: number,
 	epsilon_decay_frames: number,
 	replay_buffer_size: number,
-	learning_rate: number,
-	hit_delta: number
+	learning_rate: number
 };
 
 export interface	PlayerTag {

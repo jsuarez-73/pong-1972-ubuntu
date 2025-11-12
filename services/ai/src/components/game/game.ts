@@ -1,5 +1,5 @@
-import { Rank, Tensor, TensorBuffer } from "@tensorflow/tfjs-node";
-import * as Tf from "@tensorflow/tfjs-node";
+import { Rank, Tensor, TensorBuffer } from "@tensorflow/tfjs-node-gpu";
+import * as Tf from "@tensorflow/tfjs-node-gpu";
 import { e_GAME_CONSTANTS, e_TAG_PLAYER, e_TYPE_MESSAGE } from "@constants/constants";
 import { BallState, e_GAME_CHANNEL, e_GAME_STATE, PlayerState, StateNotificationMsg, StateResponseMsg } from "@ai-types/t_game";
 import { MessageGame } from "@ai-types/t_game";
@@ -9,7 +9,7 @@ export class	PongGame {
 
 	private	_url: string = "";
 	private	last_message: void | Promise<void> = undefined;
-	private	listener: Observer<{is_done: boolean, tag: e_TAG_PLAYER}> | undefined;
+	private	listener: Observer<boolean> | undefined;
 
 	get	hsquares() {return (30)}
 	get	vsquares() {return (30)}
@@ -50,11 +50,11 @@ export class	PongGame {
 		for (;rq_start <= rq_end; rq_start++) {
 			switch (player.tag) {
 				case e_TAG_PLAYER.ONE: 
-					buf_racquet.set(index + 1, 0, rq_start, 0, e_GAME_CHANNEL.RONE_CH);
+					buf_racquet.set(1, index, rq_start, 0, e_GAME_CHANNEL.RONE_CH);
 					break ;
 				case e_TAG_PLAYER.TWO:
 					const	pos_x = this.hsquares - 1;
-					buf_racquet.set(index + 1, 0, rq_start, pos_x, e_GAME_CHANNEL.RTWO_CH);
+					buf_racquet.set(1, index, rq_start, pos_x, e_GAME_CHANNEL.RTWO_CH);
 					break ;
 				default:
 					return ;
@@ -66,15 +66,16 @@ export class	PongGame {
 	public	ft_getStateTensor(state: StateResponseMsg[]): Tensor {
 		const	buffer = Tf.buffer([state.length, this.vsquares, this.hsquares, this.channels]);
 		state.forEach((state, index) => {
-			const	ball: BallState = state.body.ball; 
-			const	players: PlayerState[] = state.body.players;
+			const	state_cloned = JSON.parse(JSON.stringify(state));
+			const	ball: BallState = state_cloned.body.ball; 
+			const	players: PlayerState[] = state_cloned.body.players;
 			const	hratio = (this.hsquares - 1) / e_GAME_CONSTANTS.WIDTH;
 			const	vratio = (this.vsquares - 1) / e_GAME_CONSTANTS.HEIGHT;
 			this.ft_setAbsolutePositions([ball]);
 			this.ft_setAbsolutePositions(players);
 			const	cx_square = Math.floor(ball.pos_x * hratio);
 			const	cy_square = Math.floor(ball.pos_y * vratio);
-			buffer.set(index + 1, 0, cy_square, cx_square, e_GAME_CHANNEL.BALL_CH);
+			buffer.set(1, index, cy_square, cx_square, e_GAME_CHANNEL.BALL_CH);
 			this.ft_fillPlayerOnDiscreteState(buffer, players[e_TAG_PLAYER.ONE]!, index);
 			this.ft_fillPlayerOnDiscreteState(buffer, players[e_TAG_PLAYER.TWO]!, index);
 		});
@@ -102,11 +103,7 @@ export class	PongGame {
 							if (msg.type == e_TYPE_MESSAGE.NOTIFICATION) {
 								const	noti = msg as StateNotificationMsg;
 								if (noti.body.status == e_GAME_STATE.FINISH)
-									//await this.listener?.ft_update(true);
-									await this.listener?.ft_update({
-										is_done:true,
-										tag: msg.tag
-									});
+									await this.listener?.ft_update(true);
 							}
 						});
 					}
@@ -119,7 +116,7 @@ export class	PongGame {
 		return (undefined);
 	}
 
-	public	ft_listenWhenDone(ob: Observer<{is_done: boolean, tag: e_TAG_PLAYER}>): void {
+	public	ft_listenWhenDone(ob: Observer<boolean>): void {
 		this.listener = ob;
 	}
 }

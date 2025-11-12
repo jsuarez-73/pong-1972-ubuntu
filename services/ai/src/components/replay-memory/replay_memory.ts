@@ -8,10 +8,9 @@ export class ReplayMemory {
 	private	buffer_index: number[] = new Array();
 	private	length: number = 0;
 	private	index: number = 0;
-	private	_appended: number = 0;
 
 	public	get	max_len() {return (this._max_len)}
-	public	get	appended() {return (this._appended)}
+	public	get	appended() {return (this.length)}
 
 	constructor (max_len: number) {
 		this._max_len = max_len;
@@ -23,7 +22,6 @@ export class ReplayMemory {
 
 	ft_append(item: ReplayMemoryItem) {
 		this.buffer[this.index] = item;
-		this._appended++;
 		this.length = Math.min(this.length + 1, this._max_len);
 		this.index = (this.index + 1) % this._max_len;
 	}

@@ -11,6 +11,7 @@ export class	Player implements SubjectEmitter<MessageGame>, SubjectObserver<Mess
 	private	tag: e_TAG_PLAYER;
 	private	observer: Observer<MessageGame>; 
 	private	isReady: boolean = false;
+	public	is_watcher: boolean = false;
 
 	constructor (tag: TagPlayer) {
 		this.tag = tag;

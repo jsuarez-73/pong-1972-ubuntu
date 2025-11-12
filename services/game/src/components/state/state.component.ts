@@ -14,14 +14,14 @@ export class GlobalState {
 		new PlayerState(e_TAG_PLAYER.ONE),
 		new PlayerState(e_TAG_PLAYER.TWO)
 	];
-	private players_online = 0;
-	private state_response: StateResponse = new StateResponse(this.ball, this.players);
-	private notification_status: Notification = new Notification(this.players);
-	private	last_scored = 0;
-	private	last_ball_action: e_BALL_ACTION = e_BALL_ACTION.MOVE;
-	private	observer_states: Observer<MessageGame>;
-	private	msg_game_subject: Subject<MessageGame> = new Subject();
-	private	timer: NodeJS.Timeout | undefined;
+	protected players_online = 0;
+	protected state_response: StateResponse = new StateResponse(this.ball, this.players);
+	protected notification_status: Notification = new Notification(this.players);
+	protected	last_scored = 0;
+	protected	last_ball_action: e_BALL_ACTION = e_BALL_ACTION.MOVE;
+	protected	observer_states: Observer<MessageGame>;
+	protected	msg_game_subject: Subject<MessageGame> = new Subject();
+	protected	timer: NodeJS.Timeout | undefined;
 
 	constructor() {
 		this.observer_states = new Observer<StateNotificationMsg>((state_msg) => {
@@ -33,7 +33,7 @@ export class GlobalState {
 	/*@return: e_BALL_ACTION.[SCORE_P1 | SCORE_P2 | BOUNCE],
 	* when the return is a score type, this represent the player who
 	* scored. This player add up a point.*/
-	private	ft_playerDiscriminant(player_state: PlayerState) : e_BALL_ACTION {
+	protected	ft_playerDiscriminant(player_state: PlayerState) : e_BALL_ACTION {
 		let	scored : e_BALL_ACTION;
 		const	ball_pos = this.ball.ft_getBallPosition();
 		let	discriminant = Math.abs(ball_pos.pos_y - player_state.pos_y);
@@ -51,6 +51,8 @@ export class GlobalState {
 	}
 
 
+	/*[PENDING][BUG]: The last state when the ball pos_x reach the rigth_bound less than epsilon
+	* is not sent to the players.*/
 	public	ft_nextState() : e_BALL_ACTION {
 		this.ball.ft_nextBallState();
 		const	ball_pos = this.ball.ft_getBallPosition();
@@ -95,6 +97,10 @@ export class GlobalState {
 		this.ball.ft_resetInitialState();
 		this.ball.vel_x = this.last_scored === e_BALL_ACTION.SCORE_P2 ? -1 : 1;
 		this.ball.vel_y = PARAMS.vel_y;
+		this.players.forEach((player) => {
+			player.pos_y = 0;
+			player.action = e_ACTION.IDLE;
+		});
 	}
 
 	public	ft_setPlayerStatus(status: e_PLAYER_STATE, tag: e_TAG_PLAYER): GlobalState {
@@ -163,7 +169,7 @@ export class GlobalState {
 		return (this.state_response.ft_buildMessage());
 	}
 
-	private	async ft_notifyStates(): Promise<void> {
+	protected	async ft_notifyStates(): Promise<void> {
 		const	last_ball_state = this.ft_getLastBallAction();
 		const	next_msg = this.ft_nextGlobalState();
 		if (this.ft_hasFinished())
@@ -181,19 +187,19 @@ export class GlobalState {
 			this.msg_game_subject.ft_notify(this.state_response.ft_buildMessage());
 	}
 
-	private	ft_iterateStates() : void {
+	protected	ft_iterateStates() : void {
 		this.timer = setTimeout(async () => {
 			await this.ft_notifyStates();
 			this.ft_iterateStates();
 		}, BAUD_RATE);
 	}
 
-	private	ft_resetTimer(): void {
+	protected	ft_resetTimer(): void {
 		if (this.timer !== undefined)
 			clearTimeout(this.timer);
 	}
 
-	private	ft_handleStates(state_msg: StateNotificationMsg): void {
+	protected	ft_handleStates(state_msg: StateNotificationMsg): void {
 		if (this.notification_status.ft_isCountingDownToFinish()) {
 			this.msg_game_subject.ft_notify(state_msg);
 			this.ft_resetTimer();
@@ -205,7 +211,12 @@ export class GlobalState {
 					this.ft_iterateStates();
 					break ;
 				case e_GAME_STATE.FINISH:
-					this.msg_game_subject.ft_notify(this.ft_getLastState());
+					///*[FIXBUG][PENDING][PINNED]: Delivering the last_state twice.
+					//Check cli if handle just once or twice this message.*/
+					//this.msg_game_subject.ft_notify(this.ft_getLastState());
+					//The cli received this one to update the last score, then
+					//we must update cli to take that one from the last one.
+					//this.msg_game_subject.ft_notify(this.ft_getLastState());
 					this.msg_game_subject.ft_notify(state_msg);
 					this.ft_resetTimer();
 					break ;

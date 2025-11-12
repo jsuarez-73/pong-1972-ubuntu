@@ -8,7 +8,7 @@ export enum	e_GAME_CONSTANTS {
 	HALF_WIDTH = Math.round(WIDTH / 2),
 	HALF_BALL = Math.round(BALL / 2),
 	HALF_RACQUET = Math.round(RACQUET / 2),
-	COUNTER_FINISH = 720000000000,
+	COUNTER_FINISH = 72,
 	COUNTER_START = 3
 }
 

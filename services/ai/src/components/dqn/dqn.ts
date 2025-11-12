@@ -1,4 +1,4 @@
-import * as Tf from "@tensorflow/tfjs-node";
+import * as Tf from "@tensorflow/tfjs-node-gpu";
 
 export	class	Dqn {
 	public static ft_createDeepQNetwork(h: number, w: number, numActions: number): Tf.Sequential {

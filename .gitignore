@@ -21,3 +21,4 @@ dist/
 !services-debug.env
 segfaultx-oauth.json
 segfaultx2.json
+.venv
