@@ -13,7 +13,7 @@ from src_py.types.t_game import (
     AgentConfig, MessageGame, StateNotificationMsg, StateResponseMsg, PlayerTag
 )
 from src_py.constants.constants import (
-    e_ACTION, e_GAME_STATE, e_PLAYER_STATE, e_TYPE_MESSAGE, e_REWARD, e_TAG_PLAYER, PARAMS
+    e_ACTION, e_GAME_STATE, e_PLAYER_STATE, e_TYPE_MESSAGE, e_REWARD, e_TAG_PLAYER, PARAMS, e_GAME_CONSTANTS
 )
 from src_py.components.dqn.dqn import Dqn
 from src_py.components.replay_memory.replay_memory import ReplayMemory
@@ -22,6 +22,7 @@ class PongAgent:
     def __init__(self, game: PongGame, config: AgentConfig):
         self.game: PongGame = game
         self.config: AgentConfig = config
+        self._listener: Optional[Observer[bool]] = None
 
         diff = (config.epsilon_final - config.epsilon_init)
         self.epsilon_final = config.epsilon_final
@@ -29,8 +30,8 @@ class PongAgent:
         self.epsilon_increment = diff / config.epsilon_decay_frames
         self.epsilon_decay_frames = config.epsilon_decay_frames
 
-        self.online_network = Dqn.ft_createDeepQNetwork(self.game.vsquares, self.game.hsquares, 3)
-        self.target_network = Dqn.ft_createDeepQNetwork(self.game.vsquares, self.game.hsquares, 3)
+        self.online_network = Dqn.ft_createMLP(3)
+        self.target_network = Dqn.ft_createMLP(3)
         self.target_network.trainable = False
 
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=config.learning_rate)
@@ -38,7 +39,7 @@ class PongAgent:
 
         self.frame_count: int = 0
         self.cumulative_reward: float = 0.0
-        self.epsilon: float = 0.01
+        self.epsilon: float = 0.05
         self.hits_counter: int = 0
 
         self.last_state: Optional[StateResponseMsg] = None
@@ -46,6 +47,7 @@ class PongAgent:
 
         self.socket = None
         self.pendule_flag = False
+        self.scored = False
 
         # Observers
         def _observer_fn(msg: MessageGame):
@@ -63,6 +65,14 @@ class PongAgent:
         self.hits_counter = 0
         self.last_state = None
         self.last_action = e_ACTION.IDLE
+        self.scored = False
+
+    def ft_resetEpisode(self) -> None:
+        self.cumulative_reward = 0.0
+        self.hits_counter = 0
+        self.scored = False
+        self.last_action = e_ACTION.IDLE
+        self.last_state = None
 
     def ft_handleNotificationMsg(self, msg: StateNotificationMsg) -> None:
         body = msg["body"]
@@ -72,17 +82,17 @@ class PongAgent:
                     "type": e_TYPE_MESSAGE.STATUS_REQUEST,
                     "body": {"status": e_PLAYER_STATE.READY}
                 }))
-        if body["status"] == e_GAME_STATE.FINISH:
-            reward = self.ft_getReward(msg)
-            self.cumulative_reward += reward
-            if self.last_state is not None:
-                self.replay_memory.ft_append({
-                    "state": self.last_state,
-                    "action": e_ACTION.IDLE,
-                    "reward": reward,
-                    "done": True,
-                    "next_state": self.last_state
-                })
+        #if body["status"] == e_GAME_STATE.FINISH:
+        #    reward = self.ft_getReward(msg)
+        #    self.cumulative_reward += reward
+        #    if self.last_state is not None:
+        #        self.replay_memory.ft_append({
+        #            "state": self.last_state,
+        #            "action": e_ACTION.IDLE,
+        #            "reward": reward,
+        #            "done": True,
+        #            "next_state": self.last_state
+        #        })
 
     def _ft_getRandomAction(self, msg: StateResponseMsg) -> e_ACTION:
         r = random.random()
@@ -112,11 +122,13 @@ class PongAgent:
 
     def ft_getReward(self, msg: MessageGame) -> e_REWARD:
         t = msg.get("type")
-        if t == e_TYPE_MESSAGE.NOTIFICATION:
-            payload = msg["body"].get("payload")
-            if msg["body"]["status"] == e_GAME_STATE.FINISH and msg["tag"] != payload.get("winner"):
-                return e_REWARD.LOSER
-        elif t == e_TYPE_MESSAGE.STATE_RESPONSE:
+        reward_base = e_REWARD.SURVIVAL
+        #if t == e_TYPE_MESSAGE.NOTIFICATION:
+        #    payload = msg["body"].get("payload")
+        #    if msg["body"]["status"] == e_GAME_STATE.FINISH and msg["tag"] != payload.get("winner"):
+        #        return (reward_base + e_REWARD.LOSER)
+        #elif t == e_TYPE_MESSAGE.STATE_RESPONSE:
+        if t == e_TYPE_MESSAGE.STATE_RESPONSE:
             if self.last_state is None:
                 return e_REWARD.NO_REWARD
             st_msg = msg
@@ -128,37 +140,48 @@ class PongAgent:
                 discriminant = abs(ball["pos_y"] - myself["pos_y"]) - PARAMS["delta_y"]
                 if discriminant < 0:
                     self.hits_counter += 1
-                    return e_REWARD.HIT_BALL
+                    if self.hits_counter % 5 == 0:
+                        reward_long_ralies = (e_REWARD.HIT_BALL * (self.hits_counter / 5))
+                    else:
+                        reward_long_ralies = e_REWARD.NO_REWARD
+                    return (reward_base + e_REWARD.HIT_BALL + reward_long_ralies)
                 else:
-                    return e_REWARD.OP_SCORES
-            return e_REWARD.NO_REWARD
-        return e_REWARD.NO_REWARD
+                    max_discriminant = e_GAME_CONSTANTS.HEIGHT - e_GAME_CONSTANTS.RACQUET 
+                    reward_reduce_impact = (1 - (discriminant / max_discriminant)) * e_REWARD.REDUCE_IMPACT
+                    self.scored = True
+                    return (reward_base + e_REWARD.OP_SCORES + reward_reduce_impact)
+            return (reward_base + e_REWARD.MV_WRONG)
+        return (reward_base + e_REWARD.NO_REWARD)
 
     def ft_handleStateResponseMsg(self, msg: StateResponseMsg) -> None:
         # tf.tidy analogue is automatic in eager; keep tensor lifetimes short.
         if len(msg["body"]["players"]) < 2:
             return
-        state_tensor = self.game.ft_getStateTensor([msg])  # shape [1, H, W, C]
+        state_tensor = self.game.ft_getStateTensorMLP([msg])  # shape [1, H, W, C]
         action = self._ft_step(state_tensor, msg)
         reward = e_REWARD.NO_REWARD
         if self.last_state is not None:
             reward = self.ft_getReward(msg)
+            #Set done depending on scored, trying to look for smaller Markov Chains. When the opponent scores.
             self.replay_memory.ft_append({
                 "state": self.last_state,
                 "action": self.last_action,
                 "reward": reward,
-                "done": False,
+                "done": self.scored,
                 "next_state": msg
             })
         self.cumulative_reward += reward
-        self.last_state = msg
-        self.last_action = action
-
-        if self.socket:
-            self.socket.send(json.dumps({
-                "type": e_TYPE_MESSAGE.STATE_REQUEST,
-                "body": {"player": {"action": int(action)}}
-            }))
+        #[PENDING][URGENT]: In case we don't find an stability in the model, try striking it off with cumulative_reward > 40 to finish episode.
+        if self.scored == True:
+            self._listener.ft_update(True)
+        else:
+            self.last_state = msg
+            self.last_action = action
+            if self.socket:
+                self.socket.send(json.dumps({
+                    "type": e_TYPE_MESSAGE.STATE_REQUEST,
+                    "body": {"player": {"action": int(action)}}
+                }))
 
     def ft_trainOnReplayBatch(self, batch_sz: int, gamma: float) -> None:
         batch = self.replay_memory.ft_sample(batch_sz)
@@ -168,8 +191,8 @@ class PongAgent:
         # Build tensors
         state_msgs: List[StateResponseMsg] = [rp["state"] for rp in batch]
         next_state_msgs: List[StateResponseMsg] = [rp["next_state"] for rp in batch]
-        st_tensor = self.game.ft_getStateTensor(state_msgs)           # [B,H,W,C]
-        nx_tensor = self.game.ft_getStateTensor(next_state_msgs)      # [B,H,W,C]
+        st_tensor = self.game.ft_getStateTensorMLP(state_msgs)           # [B,H,W,C]
+        nx_tensor = self.game.ft_getStateTensorMLP(next_state_msgs)      # [B,H,W,C]
         action_tensor = tf.convert_to_tensor([int(rp["action"]) for rp in batch], dtype=tf.int32)  # [B]
         reward_tensor = tf.convert_to_tensor([float(rp["reward"]) for rp in batch], dtype=tf.float32)  # [B]
         done_tensor = tf.convert_to_tensor([1.0 if rp["done"] else 0.0 for rp in batch], dtype=tf.float32)  # [B]
@@ -196,6 +219,10 @@ class PongAgent:
 
     def ft_isReplayMemoryFilled(self) -> bool:
         return self.replay_memory.appended >= self.replay_memory.max_len
+
+
+    def ft_listenWhenDoneEpisode(self, ob: Observer[bool]) -> None:
+        self._listener = ob
 
     def ft_connectGame(self) -> None:
         self.socket = self.game.ft_subscribeToSocket(self.observer)

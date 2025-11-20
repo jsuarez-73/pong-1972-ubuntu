@@ -19,6 +19,11 @@ type	SocketRequest = {
 	ws: boolean
 };
 
+type	NotificationConfig = {
+	counter_start: {counter: number},
+	counter_finish: {counter: number}
+}
+
 type	NotificationPayload = {
 	p1: e_PLAYER_STATE,
 	p2: e_PLAYER_STATE,
@@ -65,10 +70,17 @@ interface	ErrorResponseMsg extends MessageGame {
 	}
 }
 
+interface	TBallState {
+	pos_x: number,
+	pos_y: number,
+	vel_x: number,
+	vel_y: number
+}
+
 interface	StateResponseMsg extends MessageGame {
 	type: e_TYPE_MESSAGE.STATE_RESPONSE,
 	body: {
-		ball: BallState,
+		ball: TBallState,
 		players: PlayerState[],
 	}
 }

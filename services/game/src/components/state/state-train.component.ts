@@ -4,8 +4,11 @@ import { PARAMS } from "../params/params.component";
 import { PlayerState } from "../player-state/player-state.component";
 
 export class	GlobalStateTrain extends GlobalState {
-	public	trainer: e_TAG_PLAYER | undefined;
+	public		trainer: e_TAG_PLAYER | undefined;
+	protected	baud_rate: number = 0;
+	protected	wait_scored_time: number = 0;
 	
+	/*[PENDING][URGENT][PINNED]: Test if the baud_rate and wait_scored_time hide those defined in the base class.*/
 	constructor () {
 		super();
 		this.notification_status.ft_setCounterFinish(Infinity);
@@ -13,7 +16,7 @@ export class	GlobalStateTrain extends GlobalState {
 
 	protected	ft_playerDiscriminant(player_state: PlayerState) : e_BALL_ACTION {
 		let	scored : e_BALL_ACTION;
-		const	ball_pos = this.ball.ft_getBallPosition();
+		const	ball_pos = this.ball.ft_getBallState();
 		let	discriminant;
 		if (player_state.tag == this.trainer)
 			discriminant = 0.1 - Math.random();
@@ -35,7 +38,7 @@ export class	GlobalStateTrain extends GlobalState {
 	protected async ft_iterateStates(): Promise<void> {
 		await this.ft_notifyStates();
 	}
-	
+
 	public ft_commitPlayerState(player: PlayerState, tag: e_TAG_PLAYER): GlobalState {
 	    super.ft_commitPlayerState(player, tag);
 		if (this.notification_status.ft_getStatus() == e_GAME_STATE.READY)

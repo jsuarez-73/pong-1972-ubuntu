@@ -22,3 +22,5 @@ dist/
 segfaultx-oauth.json
 segfaultx2.json
 .venv
+__pycache__
+.python-version

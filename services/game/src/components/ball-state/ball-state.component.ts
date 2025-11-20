@@ -30,15 +30,17 @@ export	class	BallState {
 		this.pos_y = this.pos_y + this.vel_y * this.time_step;
 	}
 
-	public	ft_getBallPosition() : {pos_x: number, pos_y: number} {
+	public	ft_getBallState() : TBallState {
 		return ({
 			pos_x: this.pos_x,
-			pos_y: this.pos_y
+			pos_y: this.pos_y,
+			vel_x: this.vel_x,
+			vel_y: this.vel_y
 		});
 	}
 
 	public	ft_resetInitialState(): void {
 		this.pos_x = this.pos_x_backup;
-		this.pos_y = this.pos_y_backup;
+		this.pos_y = (2 * Math.random() - 1) * this.pos_y_backup;
 	}
 }

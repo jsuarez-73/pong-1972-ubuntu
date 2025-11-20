@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 from websocket import WebSocketApp
 
-from src_py.constants.constants import e_GAME_CONSTANTS, e_TAG_PLAYER, e_TYPE_MESSAGE, e_GAME_STATE
+from src_py.constants.constants import e_GAME_CONSTANTS, e_TAG_PLAYER, e_TYPE_MESSAGE, e_GAME_STATE, PARAMS
 from src_py.types.t_game import (
     BallState, PlayerState, StateResponseMsg, MessageGame, StateNotificationMsg
 )
@@ -26,6 +26,8 @@ class PongGame:
     def vsquares(self) -> int: return 30
     @property
     def channels(self) -> int: return 3
+    @property
+    def fields(self) -> int: return 8
 
     @property
     def url(self) -> str: return self._url
@@ -86,6 +88,57 @@ class PongGame:
                     score=int(p["score"])
                 )
                 self._ft_fillPlayerOnDiscreteState(buffer, ps, i)
+
+        return tf.convert_to_tensor(buffer)
+
+    def _ft_normalizeState(self, state: StateResponseMsg) -> dict:
+        # deep copy so we never modify the original message
+        st = json.loads(json.dumps(state, default=lambda o: o.__dict__))
+
+        vel_x = st["body"]["ball"]["vel_x"]
+        vel_y = st["body"]["ball"]["vel_y"]
+        vel_mg = np.sqrt(vel_x * vel_x + vel_y * vel_y)
+        if vel_mg == 0:
+            vel_mg = 1.0
+
+        # Normalize ball position
+        st["body"]["ball"]["pos_x"] /= (e_GAME_CONSTANTS.WIDTH / 2)
+        st["body"]["ball"]["pos_y"] /= (e_GAME_CONSTANTS.HEIGHT / 2)
+
+        # Normalize players
+        for  player in st["body"]["players"]:
+            player["pos_y"] /= (e_GAME_CONSTANTS.HEIGHT / 2)
+
+        # Normalize ball velocity
+        st["body"]["ball"]["vel_x"] /= vel_mg
+        st["body"]["ball"]["vel_y"] /= vel_mg
+
+        return st
+
+    def ft_getStateTensorMLP(self, states: List[StateResponseMsg]) -> tf.Tensor:
+        buffer = np.zeros((len(states), self.fields), dtype=np.float32)
+
+        for i, st in enumerate(states):
+            #The sign is significant because give us information about where is the ball and myself.
+            discriminant_y = (st["body"]["ball"]["pos_y"] - st["body"]["players"][1]["pos_y"]) / e_GAME_CONSTANTS.HEIGHT
+            #The sign here is not significant, because we just need to know how far is the ball from us.
+            discriminant_x = abs(st["body"]["ball"]["pos_x"] - PARAMS["rigth_bound"]) / e_GAME_CONSTANTS.WIDTH
+            st_norm = self._ft_normalizeState(st)
+
+            ball = st_norm["body"]["ball"]
+            players = st_norm["body"]["players"]
+
+            # Put values into the correct feature vector positions
+            buffer[i] = np.array([
+                ball["pos_x"],
+                ball["pos_y"],
+                ball["vel_x"],
+                ball["vel_y"],
+                players[0]["pos_y"],
+                players[1]["pos_y"],
+                discriminant_y,
+                discriminant_x
+            ], dtype=np.float32)
 
         return tf.convert_to_tensor(buffer)
 

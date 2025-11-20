@@ -19,6 +19,20 @@ class Dqn:
         return model
 
     @staticmethod
+    def ft_createMLP(num_actions: int) -> tf.keras.Sequential:
+        if num_actions < 1:
+            raise ValueError(f"num_actions:{num_actions} invalid")
+        model = tf.keras.Sequential([
+            tf.keras.layers.Input(shape=(8,)),
+            tf.keras.layers.Dense(256, activation="relu"),
+            tf.keras.layers.Dense(256, activation="relu"),
+            tf.keras.layers.Dense(128, activation="relu"),
+            tf.keras.layers.Dropout(0.25),
+            tf.keras.layers.Dense(num_actions)
+        ])
+        return model
+
+    @staticmethod
     def ft_copyWeights(destNetwork: tf.keras.Model, srcNetwork: tf.keras.Model) -> None:
         original = destNetwork.trainable
         if destNetwork.trainable != srcNetwork.trainable:

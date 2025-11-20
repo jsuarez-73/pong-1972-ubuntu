@@ -30,16 +30,6 @@ export class	GameTrain extends Game {
 		}
 	}
 
-	/*public	ft_gameFinish(): void {
-		console.log(`Must finish the match GameTrain.`);
-		this.players.forEach((player) => {
-			if (this.watcher != player.ft_getTag()) {
-				player.ft_disposeSocket()
-			}
-		});
-		this.disposal_game_service();
-	}*/
-
 	public	ft_setWatcher(watcher: e_TAG_PLAYER): void {
 		this.watcher = watcher;
 		(this.referee as RefereeTrain).ft_setWatcherGlobalState(watcher);

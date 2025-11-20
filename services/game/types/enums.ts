@@ -9,7 +9,8 @@ export enum	e_GAME_CONSTANTS {
 	HALF_BALL = Math.round(BALL / 2),
 	HALF_RACQUET = Math.round(RACQUET / 2),
 	COUNTER_FINISH = 72,
-	COUNTER_START = 3
+	//[PENDING][URGENT]: Modify to train faster, but must be set dinamically on GlobalState.
+	COUNTER_START = 0 
 }
 
 export enum e_BALL_ACTION {

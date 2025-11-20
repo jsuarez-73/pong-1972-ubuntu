@@ -14,13 +14,12 @@ class e_GAME_CONSTANTS(IntEnum):
     COUNTER_FINISH = 72
     COUNTER_START = 3
 
-# [PENDING][FIXBUG] parity with TS (+1 in epsilon).
 PARAMS = {
     "upper_bound": e_GAME_CONSTANTS.HEIGHT / 2,
     "lower_bound": -e_GAME_CONSTANTS.HEIGHT / 2,
     "rigth_bound": (e_GAME_CONSTANTS.WIDTH / 2) - e_GAME_CONSTANTS.RACQUET_THICK,
     "left_bound": -e_GAME_CONSTANTS.WIDTH / 2 + e_GAME_CONSTANTS.RACQUET_THICK,
-    "epsilon": (e_GAME_CONSTANTS.BALL / 2 + 1),
+    "epsilon": e_GAME_CONSTANTS.BALL / 2,
     "omega": 0.1,
     "delta_y": e_GAME_CONSTANTS.RACQUET / 2,
     "ball_x_start": 0,
@@ -67,9 +66,11 @@ class e_TYPE_MESSAGE(IntEnum):
 class e_ERROR_RESPONSE(IntEnum):
     MALFORMED_MSG = 0
 
-class e_REWARD(IntEnum):
+class e_REWARD(float, Enum):
     LOSER = -1
-    OP_SCORES = -5
-    MV_WRONG = -1  # keep near -0.01 if desired
+    OP_SCORES = -1
+    SURVIVAL = 0.0001
+    MV_WRONG = 0 #[PENDING][TEST]-0.00002  # keep near -0.01 if desired
     NO_REWARD = 0
-    HIT_BALL = 1
+    HIT_BALL = 0.1
+    REDUCE_IMPACT = 0.1

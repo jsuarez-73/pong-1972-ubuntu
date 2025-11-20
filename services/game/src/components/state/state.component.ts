@@ -22,7 +22,10 @@ export class GlobalState {
 	protected	observer_states: Observer<MessageGame>;
 	protected	msg_game_subject: Subject<MessageGame> = new Subject();
 	protected	timer: NodeJS.Timeout | undefined;
+	protected	baud_rate: number = BAUD_RATE;
+	protected	wait_scored_time: number = WAIT_SCORED_TIME;
 
+	//[PENDING][URGENT]: Set a way to set the notification object the counter_start, counter_finish timers.
 	constructor() {
 		this.observer_states = new Observer<StateNotificationMsg>((state_msg) => {
 			this.ft_handleStates(state_msg);
@@ -35,7 +38,7 @@ export class GlobalState {
 	* scored. This player add up a point.*/
 	protected	ft_playerDiscriminant(player_state: PlayerState) : e_BALL_ACTION {
 		let	scored : e_BALL_ACTION;
-		const	ball_pos = this.ball.ft_getBallPosition();
+		const	ball_pos = this.ball.ft_getBallState();
 		let	discriminant = Math.abs(ball_pos.pos_y - player_state.pos_y);
 		if (player_state.tag === e_TAG_PLAYER.TWO)
 			scored = e_BALL_ACTION.SCORE_P1;
@@ -51,11 +54,9 @@ export class GlobalState {
 	}
 
 
-	/*[PENDING][BUG]: The last state when the ball pos_x reach the rigth_bound less than epsilon
-	* is not sent to the players.*/
 	public	ft_nextState() : e_BALL_ACTION {
 		this.ball.ft_nextBallState();
-		const	ball_pos = this.ball.ft_getBallPosition();
+		const	ball_pos = this.ball.ft_getBallState();
 		const	upper_gap = Math.abs(ball_pos.pos_y - PARAMS.upper_bound);
 		const	lower_gap = Math.abs(ball_pos.pos_y - PARAMS.lower_bound);
 
@@ -75,12 +76,14 @@ export class GlobalState {
 		switch (this.last_ball_action) {
 			case e_BALL_ACTION.SCORE_P1:
 				this.players[e_TAG_PLAYER.ONE].score++;
+				this.msg_game_subject.ft_notify(this.state_response.ft_buildMessage());
 				if (this.players[e_TAG_PLAYER.ONE].score === PARAMS.points_to_win)
 					this.notification_status.ft_finish();
 				this.ft_resetInitialSetState();
 				break ;
 			case e_BALL_ACTION.SCORE_P2:
 				this.players[e_TAG_PLAYER.TWO].score++;
+				this.msg_game_subject.ft_notify(this.state_response.ft_buildMessage());
 				if (this.players[e_TAG_PLAYER.TWO].score === PARAMS.points_to_win)
 					this.notification_status.ft_finish();
 				this.ft_resetInitialSetState();
@@ -96,7 +99,7 @@ export class GlobalState {
 	public	ft_resetInitialSetState() : void {
 		this.ball.ft_resetInitialState();
 		this.ball.vel_x = this.last_scored === e_BALL_ACTION.SCORE_P2 ? -1 : 1;
-		this.ball.vel_y = PARAMS.vel_y;
+		this.ball.vel_y = (Math.random() > 0.5 ? 1 : -1) * PARAMS.vel_y;
 		this.players.forEach((player) => {
 			player.pos_y = 0;
 			player.action = e_ACTION.IDLE;
@@ -180,7 +183,7 @@ export class GlobalState {
 				setTimeout(() => {
 					this.msg_game_subject.ft_notify(next_msg);
 					res(true);	
-				}, WAIT_SCORED_TIME);
+				}, this.wait_scored_time);
 			}));
 		}
 		else
@@ -191,7 +194,7 @@ export class GlobalState {
 		this.timer = setTimeout(async () => {
 			await this.ft_notifyStates();
 			this.ft_iterateStates();
-		}, BAUD_RATE);
+		}, this.baud_rate);
 	}
 
 	protected	ft_resetTimer(): void {

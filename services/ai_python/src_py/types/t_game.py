@@ -16,6 +16,8 @@ class e_GAME_CHANNEL(IntEnum):
 class BallState:
     pos_x: float
     pos_y: float
+    vel_x: float
+    vel_y: float
 
 @dataclass
 class PlayerState:

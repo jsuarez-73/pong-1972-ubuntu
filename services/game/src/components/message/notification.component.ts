@@ -11,17 +11,19 @@ export class Notification extends AbstractBuildMessage {
 		countdown_finish: false
 	};
 	private	change_state_subject: Subject<StateNotificationMsg> = new Subject();
-	private	counter_down = {counter: e_GAME_CONSTANTS.COUNTER_START};
-	private	counter_finish = {counter: e_GAME_CONSTANTS.COUNTER_FINISH};
+	private	counter_down;
+	private	counter_finish;
 	private	is_halt: boolean = false;
 	private	winner: e_TAG_PLAYER | undefined;
 	private	losers: e_TAG_PLAYER[] | undefined;
 	private	players: PlayerState[] = [];
 
-	constructor (players?: PlayerState[]) {
+	constructor (players?: PlayerState[], config?: NotificationConfig) {
 		super(e_TYPE_MESSAGE.NOTIFICATION);
 		if (players !== undefined && players.length > 0)
 			this.players.push(...players);
+		this.counter_down = config?.counter_start ?? {counter: e_GAME_CONSTANTS.COUNTER_START};
+		this.counter_finish = config?.counter_finish ?? {counter: e_GAME_CONSTANTS.COUNTER_FINISH};
 	}
 
 	public	ft_setCounterFinish(counter_finish: number) {

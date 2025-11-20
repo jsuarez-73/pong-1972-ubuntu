@@ -28,7 +28,7 @@ export class StateResponse extends AbstractBuildMessage {
 		return ({
 			type: this.type,
 			body: {
-				ball: this.ball.ft_getBallPosition(),
+				ball: this.ball.ft_getBallState(),
 				players: this.players
 			}
 		});
