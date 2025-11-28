@@ -12,14 +12,12 @@ export enum	e_GAME_CONSTANTS {
 	COUNTER_START = 3
 }
 
-/*[PENDING][FIXBUG]: When the global state fix its bug we must remove the + 1 in the 
-* epsilon param.*/
 export const PARAMS = {
 	upper_bound: e_GAME_CONSTANTS.HEIGHT / 2,
 	lower_bound: -e_GAME_CONSTANTS.HEIGHT / 2,
 	rigth_bound: (e_GAME_CONSTANTS.WIDTH / 2) - e_GAME_CONSTANTS.RACQUET_THICK,
 	left_bound: -e_GAME_CONSTANTS.WIDTH / 2 + e_GAME_CONSTANTS.RACQUET_THICK,
-	epsilon: (e_GAME_CONSTANTS.BALL / 2 + 1),
+	epsilon: e_GAME_CONSTANTS.BALL / 2,
 	omega: 0.1,
 	delta_y: e_GAME_CONSTANTS.RACQUET / 2,
 	ball_x_start: 0,
@@ -76,8 +74,10 @@ export enum	e_ERROR_RESPONSE {
 
 export enum	e_REWARD {
 	LOSER = -1,
-	OP_SCORES = -5,
-	MV_WRONG = -0.01,
+	OP_SCORES = -1,
+	SURVIVAL = 0.0001,
+	MV_WRONG = 0,
 	NO_REWARD = 0,
-	HIT_BALL = 1 
+	HIT_BALL = 0.1,
+	REDUCE_IMPACT = 0.1
 }

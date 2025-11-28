@@ -1,4 +1,4 @@
-import * as Tf from "@tensorflow/tfjs-node-gpu";
+import * as Tf from "@tensorflow/tfjs-node";
 
 export	class	Dqn {
 	public static ft_createDeepQNetwork(h: number, w: number, numActions: number): Tf.Sequential {
@@ -29,6 +29,20 @@ export	class	Dqn {
 		}));
 		model.add(Tf.layers.flatten());
 		model.add(Tf.layers.dense({units: 100, activation: 'relu'}));
+		model.add(Tf.layers.dropout({rate: 0.25}));
+		model.add(Tf.layers.dense({units: numActions}));
+		return model;
+	}
+
+	public static	ft_createMLP(numActions: number): Tf.Sequential {
+		if (numActions < 1) {
+			throw new Error(`numActions: ${numActions} is wrong.`);
+		}
+		const model = Tf.sequential();
+		model.add(Tf.layers.dense({units: 256, inputShape: [8]}));
+		model.add(Tf.layers.dense({units: 256, activation: 'relu'}));
+		model.add(Tf.layers.dense({units: 256, activation: 'relu'}));
+		model.add(Tf.layers.dense({units: 128, activation: 'relu'}));
 		model.add(Tf.layers.dropout({rate: 0.25}));
 		model.add(Tf.layers.dense({units: numActions}));
 		return model;

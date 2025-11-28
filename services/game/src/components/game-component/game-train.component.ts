@@ -3,8 +3,6 @@ import { e_TAG_PLAYER } from "@game-types/enums";
 import { RefereeTrain } from "../referee/referee-train.component";
 import { Game } from "./game.component";
 
-/*[PENDING][PINNED][URGENT]: Set the trainig mode to check visually how is the behaviour of the model,
-* also to save some memory caused by only one model and not two. Make sure the ball!*/
 export class	GameTrain extends Game {
 
 	protected	watcher: e_TAG_PLAYER | undefined;
@@ -33,5 +31,10 @@ export class	GameTrain extends Game {
 	public	ft_setWatcher(watcher: e_TAG_PLAYER): void {
 		this.watcher = watcher;
 		(this.referee as RefereeTrain).ft_setWatcherGlobalState(watcher);
+	}
+
+	/*[PENDING]: Override the ft_setDisposal to avoid sending information to other services.*/
+	public	ft_setDisposal(disposal : (() => void)): void {
+		this.disposal_game_service = disposal;
 	}
 }

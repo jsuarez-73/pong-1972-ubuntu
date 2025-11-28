@@ -49,7 +49,9 @@ export interface	MessageGame {
 
 export interface BallState {
 	pos_x: number,
-	pos_y: number
+	pos_y: number,
+	vel_x: number,
+	vel_y: number
 };
 
 export interface PlayerState {

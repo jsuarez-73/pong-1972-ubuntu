@@ -24,8 +24,6 @@ export class Game {
 	protected	tokens: string[] = new Array<string>();
 
 	constructor (socket: WebSocket, req: SocketRequest, ref: Referee) {
-		/*[PENDING]: Read the isTraining when the Game will send the result to services, thus
-		* avoid when is training to skip logs from ai models.*/
 		this.referee = ref;
 		this.id = Number(req.params.id);
 		this.ft_incommingSocket(socket, req);

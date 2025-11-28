@@ -1,6 +1,6 @@
-import { Rank, Tensor, TensorBuffer } from "@tensorflow/tfjs-node-gpu";
-import * as Tf from "@tensorflow/tfjs-node-gpu";
-import { e_GAME_CONSTANTS, e_TAG_PLAYER, e_TYPE_MESSAGE } from "@constants/constants";
+import { Rank, Tensor, TensorBuffer } from "@tensorflow/tfjs-node";
+import * as Tf from "@tensorflow/tfjs-node";
+import { e_GAME_CONSTANTS, e_TAG_PLAYER, e_TYPE_MESSAGE, PARAMS } from "@constants/constants";
 import { BallState, e_GAME_CHANNEL, e_GAME_STATE, PlayerState, StateNotificationMsg, StateResponseMsg } from "@ai-types/t_game";
 import { MessageGame } from "@ai-types/t_game";
 import { Observer } from "@segfaultx/observable";
@@ -14,6 +14,7 @@ export class	PongGame {
 	get	hsquares() {return (30)}
 	get	vsquares() {return (30)}
 	get	channels() {return (3)}
+	get fields() {return (8)}
 	set	url(url: string) {
 		/*[PENDING]: Set properly the regex.*/
 		if (url.length == 0)//if (/https?:\/\/.*/.test(url))
@@ -80,6 +81,51 @@ export class	PongGame {
 			this.ft_fillPlayerOnDiscreteState(buffer, players[e_TAG_PLAYER.TWO]!, index);
 		});
 		return (buffer.toTensor());
+	}
+
+    private	ft_normalizeState(state: StateResponseMsg): StateResponseMsg {
+        const	st = JSON.parse(JSON.stringify(state));
+        const	vel_x = st.body.ball.vel_x;
+        const	vel_y = st.body.ball.vel_y;
+        let		vel_mg = Math.sqrt(vel_x * vel_x + vel_y * vel_y)
+        if (vel_mg == 0)
+            vel_mg = 1.0
+        st.body.ball.pos_x /= (e_GAME_CONSTANTS.WIDTH / 2)
+        st.body.ball.pos_y /= (e_GAME_CONSTANTS.HEIGHT / 2)
+        st.body.players.forEach((player: PlayerState) => {
+            player.pos_y /= (e_GAME_CONSTANTS.HEIGHT / 2)
+		});
+        st.body.ball.vel_x /= vel_mg
+        st.body.ball.vel_y /= vel_mg
+        return (st);
+	}
+
+    public	ft_getStateTensorMLP(states: StateResponseMsg[]): Tf.Tensor {
+
+		const	buffer = Tf.buffer([states.length, this.fields]);
+		states.forEach((st, i) => {
+			if (st.body.players.length == 0 || st.body.players == undefined)
+				return (buffer.toTensor());
+			const	ball = st.body.ball;
+			const	players = st.body.players;
+            //The sign is significant because give us information about where is the ball and myself.
+            const	discriminant_y = (ball.pos_y - players[e_TAG_PLAYER.TWO]!.pos_y) / e_GAME_CONSTANTS.HEIGHT
+            //The sign here is not significant, because we just need to know how far is the ball from us.
+            const	discriminant_x = Math.abs(ball.pos_x - PARAMS["rigth_bound"]) / e_GAME_CONSTANTS.WIDTH
+            const	st_norm = this.ft_normalizeState(st)
+            const	ball_nm = st_norm.body.ball;
+            const	players_nm = st_norm.body.players;
+			//Set the vector normalized in the buffer.
+            buffer.set(ball_nm.pos_x, i, 0);
+			buffer.set(ball_nm.pos_y, i, 1);
+			buffer.set(ball_nm.vel_x, i, 2);
+			buffer.set(ball_nm.vel_y, i, 3);
+			buffer.set(players_nm[0]!.pos_y, i, 4);
+			buffer.set(players_nm[1]!.pos_y, i, 5);
+			buffer.set(discriminant_y, i, 6);
+			buffer.set(discriminant_x, i, 7);
+		});
+        return (buffer.toTensor()); 
 	}
 
 	public	ft_subscribeToSocket(ob: Observer<MessageGame>) : WebSocket | undefined {

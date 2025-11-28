@@ -1,7 +1,8 @@
 export const	CONSTANTS = {
 	PORT:  parseInt(process.env.GAME_PORT ?? "3000"),
 	VERSION_API: "v1",
-	SHARED_FOLDER: process.env.SHARED_FOLDER ?? "../../../../shared"
+	SHARED_FOLDER: process.env.SHARED_FOLDER ?? "../../../../shared",
+	MODEL_DIR: "../../../../model"
 };
 
 export const	SERVICES = {

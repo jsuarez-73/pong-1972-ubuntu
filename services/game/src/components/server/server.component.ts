@@ -1,7 +1,9 @@
 import	Fastify from "fastify";
 import  websocket  from "@fastify/websocket";
 import  process  from "node:process";
+import	fastifyStatic from "@fastify/static";
 import { CONSTANTS } from "@core/constants/constants";
+import	Path from "node:path";
 
 export abstract class GameServer {
 
@@ -31,6 +33,16 @@ export abstract class GameServer {
 
 	private	ft_registerPlugins() : void {
 		this.fastify.register(websocket);
+		this.fastify.register(fastifyStatic, {
+			root: Path.join(__dirname, CONSTANTS.MODEL_DIR),
+			setHeaders: (res: any, _path: string, _stat: any) => {
+				res.setHeaders(new Headers({
+					"Access-Control-Allow-Origin": "*",
+					"Access-Control-Allow-Methods": "GET",
+					"Access-Control-Allow-Headers": "*"
+				}));
+			}
+		});
 	}
 
 	protected	ft_registerRoutes() : void {

@@ -16,7 +16,7 @@ import { ViewElement } from "@shared/element/element";
 export class	PongCourt extends ViewModel<ModelPongCourtService> {
 
 	/*[!PENDING][!IMPORTANT]: This url must be set up dinamically.*/
-	private	url: string = "http://localhost:3000/v1/train/1/watcher";//"wss://segfaultx.com/v1/game/207";
+	private	url: string = "http://localhost:3000/v1/ai/1";//"wss://segfaultx.com/v1/game/207";
 	private	sc_size_game = {
 		x: this.sc_size.x - (e_PONG_COURT_VM.PADDING_LEFT + e_PONG_COURT_VM.PADDING_RIGHT),
 		y: this.sc_size.y - (e_PONG_COURT_VM.PADDING_UP + e_PONG_COURT_VM.PADDING_LOW)

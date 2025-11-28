@@ -2,18 +2,18 @@ import { GameServer } from "@components/server/server.component";
 import { Game } from "@components/game-component/game.component";
 import { WebSocket } from "@fastify/websocket";
 import { SERVICES } from "@core/constants/constants";
-import { GameTrain } from "../game-component/game-train.component";
-import { Referee } from "../referee/referee.component";
-import { GlobalStateTrain } from "../state/state-train.component";
-import { GlobalState } from "../state/state.component";
-import { RefereeTrain } from "../referee/referee-train.component";
-import { AiGame } from "../game-component/game-ai.component.ts";
+import { GameTrain } from "@components/game-component/game-train.component";
+import { Referee } from "@components/referee/referee.component";
+import { GlobalStateTrain } from "@components/state/state-train.component";
+import { GlobalState } from "@components/state/state.component";
+import { RefereeTrain } from "@components/referee/referee-train.component";
+import { AiGame } from "@components/game-component/game-ai.component";
 
 export class GameService extends GameServer {
 	private	static game_service: GameService | null = null;
 	private			game_log: Map<number,Game> = new Map();
 	private			train_log: Map<number, GameTrain> = new Map();
-	private			ai_log: Map<number, GameTrain> = new Map();
+	private			ai_log: Map<number, AiGame> = new Map();
 	protected		routes: Routes[] = [
 		{
 			method: "GET",
@@ -78,7 +78,9 @@ export class GameService extends GameServer {
 	}
 
 	private	ft_wsGameAIHandler(socket: WebSocket, req: SocketRequest) : void {
-		/*[PENDING][URGENT][PINNED]: Set the AiGame component to test the model with the cli and the server.*/
+		/*[PENDING][URGENT][PINNED]: Set the AiGame component to test the model with the cli and the server.
+		* The AiGame is intended to behave identically to Game but overriding the ft_setDisposal function
+		* to avoid sending information to other services.*/
 		const	ai_log = this.ai_log.get(Number(req.params.id));
 		if (!ai_log) {
 			const	ai_game = new AiGame(
